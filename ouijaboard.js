@@ -6,9 +6,23 @@ import marked from 'marked';
 const POST_DIR = 'data/posts';
 const RENDER_DIR = 'data/renders';
 
-export function initializeRendering() {
+const DEFAULT_TEMPLATE = (content) => `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ouijaboard</title>
+</head>
+<body>
+  ${content}
+</body>
+</html>
+`;
+
+export function initializeRendering(options = {}) {
+  const { template = DEFAULT_TEMPLATE } = options;
+
   // Read all Markdown files from the POST_DIR
-  const postFiles = fs.readdirSync(POST_DIR);
+  const postFiles = fs.readdirSync(POST_DIR).filter((file) => file.endsWith('.md'));
 
   // Create the RENDER_DIR if it doesn't exist
   if (!fs.existsSync(RENDER_DIR)) {
@@ -21,7 +35,8 @@ export function initializeRendering() {
     const html = renderMarkdownToHtml(filePath);
     const renderDir = path.join(RENDER_DIR, uuidv4());
     fs.mkdirSync(renderDir, { recursive: true });
-    fs.writeFileSync(path.join(renderDir, 'index.html'), html);
+    const outputPath = path.join(renderDir, path.basename(file, '.md') + '.html');
+    fs.writeFileSync(outputPath, template(html));
   });
 }
 
