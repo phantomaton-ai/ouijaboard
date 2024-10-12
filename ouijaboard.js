@@ -18,7 +18,7 @@ const DEFAULT_TEMPLATE = (content) => `
 </html>
 `;
 
-export function initializeRendering(options = {}) {
+export default function render(options = {}) {
   const { template = DEFAULT_TEMPLATE } = options;
 
   // Read all Markdown files from the POST_DIR
@@ -29,15 +29,19 @@ export function initializeRendering(options = {}) {
     fs.mkdirSync(RENDER_DIR, { recursive: true });
   }
 
+  // Create a new render directory
+  const renderDir = path.join(RENDER_DIR, uuidv4());
+  fs.mkdirSync(renderDir, { recursive: true });
+
   // Process each Markdown file
   postFiles.forEach((file) => {
     const filePath = path.join(POST_DIR, file);
     const html = renderMarkdownToHtml(filePath);
-    const renderDir = path.join(RENDER_DIR, uuidv4());
-    fs.mkdirSync(renderDir, { recursive: true });
     const outputPath = path.join(renderDir, path.basename(file, '.md') + '.html');
     fs.writeFileSync(outputPath, template(html));
   });
+
+  return renderDir;
 }
 
 function renderMarkdownToHtml(filePath) {
