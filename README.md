@@ -15,6 +15,12 @@ By default, `.md` files are read from `data/posts` and written to `data/renders`
 
 ## Options
 
+You may also invoke Ouijaboard with `options`:
+
+```
+ouijaboard({ input, output, template });
+```
+
 ### `input`
 The directory where Markdown files are located. Defaults to `'data/posts'`.
 
