@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import marked from 'marked';
 
-const DEFAULT_POST_DIR = 'data/posts';
-const DEFAULT_RENDER_DIR = 'data/renders';
+const DEFAULT_INPUT_DIR = 'data/posts';
+const DEFAULT_OUTPUT_DIR = 'data/renders';
 
 const DEFAULT_TEMPLATE = (content) => `
 <!DOCTYPE html>
@@ -20,32 +19,28 @@ const DEFAULT_TEMPLATE = (content) => `
 
 export default function render(options = {}) {
   const {
-    postDir = DEFAULT_POST_DIR,
-    renderDir = DEFAULT_RENDER_DIR,
+    input = DEFAULT_INPUT_DIR,
+    output = DEFAULT_OUTPUT_DIR,
     template = DEFAULT_TEMPLATE,
   } = options;
 
-  // Read all Markdown files from the postDir
-  const postFiles = fs.readdirSync(postDir).filter((file) => file.endsWith('.md'));
+  // Read all Markdown files from the input directory
+  const postFiles = fs.readdirSync(input).filter((file) => file.endsWith('.md'));
 
-  // Create the renderDir if it doesn't exist
-  if (!fs.existsSync(renderDir)) {
-    fs.mkdirSync(renderDir, { recursive: true });
+  // Create the output directory if it doesn't exist
+  if (!fs.existsSync(output)) {
+    fs.mkdirSync(output, { recursive: true });
   }
-
-  // Create a new render directory
-  const newRenderDir = path.join(renderDir, uuidv4());
-  fs.mkdirSync(newRenderDir, { recursive: true });
 
   // Process each Markdown file
   postFiles.forEach((file) => {
-    const filePath = path.join(postDir, file);
+    const filePath = path.join(input, file);
     const html = renderMarkdownToHtml(filePath);
-    const outputPath = path.join(newRenderDir, path.basename(file, '.md') + '.html');
+    const outputPath = path.join(output, path.basename(file, '.md') + '.html');
     fs.writeFileSync(outputPath, template(html));
   });
 
-  return newRenderDir;
+  return output;
 }
 
 function renderMarkdownToHtml(filePath) {
