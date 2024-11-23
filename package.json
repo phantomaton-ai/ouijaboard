@@ -22,5 +22,9 @@
   "type": "module",
   "devDependencies": {
     "lovecraft": "^1.1.0"
+  },
+  "dependencies": {
+    "marked": "^15.0.2",
+    "necronomicon": "^1.2.0"
   }
 }
