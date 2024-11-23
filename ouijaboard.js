@@ -2,48 +2,57 @@ import fs from 'fs';
 import path from 'path';
 import marked from 'marked';
 
-const DEFAULT_INPUT_DIR = 'data/posts';
-const DEFAULT_OUTPUT_DIR = 'data/renders';
+class Ouijaboard {
+  static DEFAULT_INPUT_DIR = 'data/posts';
+  static DEFAULT_OUTPUT_DIR = 'data/renders';
 
-const DEFAULT_TEMPLATE = (content) => `
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Ouijaboard</title>
-</head>
-<body>
-  ${content}
-</body>
-</html>
-`;
+  static DEFAULT_TEMPLATE = (content) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Ouijaboard</title>
+    </head>
+    <body>
+      ${content}
+    </body>
+    </html>
+  `;
 
-export default function render(options = {}) {
-  const {
-    input = DEFAULT_INPUT_DIR,
-    output = DEFAULT_OUTPUT_DIR,
-    template = DEFAULT_TEMPLATE,
-  } = options;
-
-  // Read all Markdown files from the input directory
-  const postFiles = fs.readdirSync(input).filter((file) => file.endsWith('.md'));
-
-  // Create the output directory if it doesn't exist
-  if (!fs.existsSync(output)) {
-    fs.mkdirSync(output, { recursive: true });
+  constructor(options = {}) {
+    this.i = options.input || Ouijaboard.DEFAULT_INPUT_DIR;
+    this.o = options.output || Ouijaboard.DEFAULT_OUTPUT_DIR;
+    this.t = options.template || Ouijaboard.DEFAULT_TEMPLATE;
   }
 
-  // Process each Markdown file
-  postFiles.forEach((file) => {
-    const filePath = path.join(input, file);
-    const html = renderMarkdownToHtml(filePath);
-    const outputPath = path.join(output, path.basename(file, '.md') + '.html');
-    fs.writeFileSync(outputPath, template(html));
-  });
+  list() {
+    return fs.readdirSync(this.i).filter(f => f.endsWith('.md'));
+  }
 
-  return output;
+  read(f) {
+    return fs.readFileSync(path.join(this.i, f), 'utf8');
+  }
+
+  write(f, c) {
+    const p = path.join(this.o, path.basename(f, '.md') + '.html');
+    fs.writeFileSync(p, this.t(this.renderMarkdown(c)));
+    return p;
+  }
+
+  rename(src, dst) {
+    const srcPath = path.join(this.i, src);
+    const dstPath = path.join(this.i, dst);
+    fs.renameSync(srcPath, dstPath);
+    return dstPath;
+  }
+
+  remove(f) {
+    const p = path.join(this.i, f);
+    fs.unlinkSync(p);
+  }
+
+  renderMarkdown(markdown) {
+    return marked.parse(markdown);
+  }
 }
 
-function renderMarkdownToHtml(filePath) {
-  const markdown = fs.readFileSync(filePath, 'utf8');
-  return marked.parse(markdown);
-}
+export default Ouijaboard;
