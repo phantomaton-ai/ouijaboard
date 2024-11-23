@@ -6,6 +6,8 @@
     "all": "lovecraft -a",
     "cov": "lovecraft -c",
     "lint": "lovecraft -l",
+    "maj": "lovecraft -a -p major",
+    "min": "lovecraft -a -p minor",
     "pub": "lovecraft -a -p",
     "test": "lovecraft"
   },
@@ -19,6 +21,6 @@
   "description": "",
   "type": "module",
   "devDependencies": {
-    "lovecraft": "^1.0.3"
+    "lovecraft": "^1.1.0"
   }
 }
