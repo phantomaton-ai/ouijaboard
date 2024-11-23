@@ -1,20 +1,24 @@
 {
   "name": "ouijaboard",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.0",
+  "main": "ouijaboard.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "all": "lovecraft -a",
+    "cov": "lovecraft -c",
+    "lint": "lovecraft -l",
+    "pub": "lovecraft -a -p",
+    "test": "lovecraft"
   },
-  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phantomaton-ai/ouijaboard.git"
+  },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Phantomaton",
+  "license": "MIT",
   "description": "",
+  "type": "module",
   "devDependencies": {
-    "chai": "^5.1.1",
-    "mocha": "^10.7.3"
-  },
-  "dependencies": {
-    "marked": "^14.1.2"
+    "lovecraft": "^1.0.3"
   }
 }
