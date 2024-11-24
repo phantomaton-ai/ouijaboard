@@ -9,17 +9,16 @@ const DEFAULTS = {
   publications: 'data/publications',
   renders: 'data/renders',
   symbols: { directive: { start: '🔮', end: '👻' } },
-  template: (content) => `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Ouijaboard</title>
-    </head>
-    <body>
-      ${content}
-    </body>
-    </html>
-  `
+  template: (content) => `<!DOCTYPE html>
+<html>
+<head>
+  <title>Ouijaboard</title>
+</head>
+<body>
+  ${content}
+</body>
+</html>
+`
 };
 
 class Ouijaboard {
@@ -64,7 +63,7 @@ class Ouijaboard {
     const draft = path.join(this.drafts, `${post}.md`);
     fs.writeFileSync(draft, content);
     const executed = this.spellbook.execute(content);
-    const rendered = marked.parse(executed);
+    const rendered = marked.parse(executed).trim();
     const render = path.join(this.renders, `${post}.html`);
     fs.writeFileSync(render, this.template(rendered));
   }
@@ -82,4 +81,6 @@ class Ouijaboard {
   }
 }
 
-export default Ouijaboard;
+const ouijaboard = options => new Ouijaboard(options);
+
+export default ouijaboard;

@@ -1,73 +1,92 @@
-import { expect } from 'lovecraft';
+import { expect, stub, restore } from 'lovecraft';
 import fs from 'fs';
 import path from 'path';
-import Ouijaboard from './ouijaboard';
+import ouijaboard from './ouijaboard.js';
 
 describe('Ouijaboard', () => {
-  let ouijaboard;
+  let instance;
 
   beforeEach(() => {
-    ouijaboard = new Ouijaboard({
+    instance = ouijaboard({
       drafts: 'data/drafts',
       publications: 'data/publications',
       renders: 'data/renders'
     });
 
     // Stub out the relevant fs calls
-    this.sandbox.stub(fs, 'readdirSync').returns(['post1.md', 'post2.md']);
-    this.sandbox.stub(fs, 'readFileSync').returns('# Hello, World!');
-    this.sandbox.stub(fs, 'writeFileSync');
-    this.sandbox.stub(fs, 'copyFileSync');
+    stub(fs, 'readdirSync').returns(['post1.md', 'post2.md']);
+    stub(fs, 'readFileSync').returns('# Hello, World!');
+    stub(fs, 'writeFileSync');
+    stub(fs, 'copyFileSync');
   });
 
   afterEach(() => {
-    this.sandbox.restore();
+    restore();
   });
 
   it('should list posts', () => {
-    const posts = ouijaboard.list();
+    const posts = instance.list();
     expect(posts).to.deep.equal(['post1', 'post2']);
-    expect(fs.readdirSync).to.have.been.calledWith('data/drafts');
+    expect(fs.readdirSync.calledWith('data/drafts')).true;
   });
 
   it('should read a post', () => {
-    const content = ouijaboard.read('post1');
+    const content = instance.read('post1');
     expect(content).to.equal('# Hello, World!');
-    expect(fs.readFileSync).to.have.been.calledWith(
+    expect(fs.readFileSync.calledWith(
       path.join('data/drafts', 'post1.md'),
       'utf-8'
-    );
+    )).true;
   });
 
   it('should write a post', () => {
-    ouijaboard.write('post3', '# New Post');
-    expect(fs.writeFileSync).to.have.been.calledWith(
+    instance.write('post3', '# New Post');
+    expect(fs.writeFileSync.calledWith(
       path.join('data/drafts', 'post3.md'),
       '# New Post'
-    );
-    expect(fs.writeFileSync).to.have.been.calledWith(
+    )).true;
+    expect(fs.writeFileSync.calledWith(
       path.join('data/renders', 'post3.html'),
-      this.sandbox.match.any
-    );
+      `<!DOCTYPE html>
+<html>
+<head>
+  <title>Ouijaboard</title>
+</head>
+<body>
+  <h1>New Post</h1>
+</body>
+</html>
+`
+    )).true;
+    
   });
 
   it('should replace post content', () => {
-    ouijaboard.replace('post1', 'Hello', 'Goodbye', '# Goodbye, World!');
-    expect(fs.writeFileSync).to.have.been.calledWith(
+    instance.replace('post1', 'Hello', 'World!', 'Goodbye, folks!');
+    expect(fs.writeFileSync.calledWith(
       path.join('data/drafts', 'post1.md'),
-      '# Goodbye, World!'
-    );
-    expect(fs.writeFileSync).to.have.been.calledWith(
+      '# Goodbye, folks!'
+    )).true;
+    expect(fs.writeFileSync.calledWith(
       path.join('data/renders', 'post1.html'),
-      this.sandbox.match.any
-    );
+      `<!DOCTYPE html>
+<html>
+<head>
+  <title>Ouijaboard</title>
+</head>
+<body>
+  <h1>Goodbye, folks!</h1>
+</body>
+</html>
+`
+    )).true;
   });
 
   it('should publish a post', () => {
-    ouijaboard.publish('post1');
-    expect(fs.copyFileSync).to.have.been.calledWith(
+    instance.publish('post1');
+    expect(fs.copyFileSync.calledWith(
       path.join('data/renders', 'post1.html'),
       path.join('data/publications', 'post1.html')
-    );
+    )).true;
   });
 });
