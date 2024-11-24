@@ -1,12 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import marked from 'marked';
+import necronomicon from 'necronomicon';
 
-class Ouijaboard {
-  static DEFAULT_INPUT_DIR = 'data/posts';
-  static DEFAULT_OUTPUT_DIR = 'data/renders';
-
-  static DEFAULT_TEMPLATE = (content) => `
+const DEFAULTS = {
+  commands: [],
+  drafts: 'data/drafts',
+  publications: 'data/publications',
+  renders: 'data/renders',
+  symbols: { directive: { start: '🔮', end: '👻' } },
+  template: (content) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -16,42 +19,56 @@ class Ouijaboard {
       ${content}
     </body>
     </html>
-  `;
+  `
+};
 
+class Ouijaboard {
   constructor(options = {}) {
-    this.i = options.input || Ouijaboard.DEFAULT_INPUT_DIR;
-    this.o = options.output || Ouijaboard.DEFAULT_OUTPUT_DIR;
-    this.t = options.template || Ouijaboard.DEFAULT_TEMPLATE;
+    options = { ...DEFAULTS, ...options };
+    this.drafts = options.drafts;
+    this.publications = options.publications;
+    this.renders = options.renders;
+    this.template = options.template;
+    this.spellbook = necronomicon({
+      commands: options.commands,
+      symbols: options.symbols
+      includes: { text: true, results: true, directives: false }
+    });
+  }
+
+  document() {
+    const documentation = this.spellbook.document();
+    const shifted = documentation.split('\n').map(
+      line => line.startsWith('#') ? `#${line}` : line
+    ).join('\n');
+    return [
+      '# Blog post syntax',
+      '',
+      'Blog posts are written in Markdown, with support for custom directives.',
+      '',
+      shifted
+    ].join('\n')
   }
 
   list() {
-    return fs.readdirSync(this.i).filter(f => f.endsWith('.md'));
+    // TODO should just list post IDs (no directory, no .md)
+    return fs.readdirSync(this.drafts).filter(f => f.endsWith('.md'));
   }
 
-  read(f) {
-    return fs.readFileSync(path.join(this.i, f), 'utf8');
+  read(post) {
+    return fs.readFileSync(path.join(this.drafts, `${post}.md`), 'utf-8');
   }
 
-  write(f, c) {
-    const p = path.join(this.o, path.basename(f, '.md') + '.html');
-    fs.writeFileSync(p, this.t(this.renderMarkdown(c)));
-    return p;
+  write(post, content) {
+    // TODO create or overwrite .md file contents, then render .html to renders
   }
 
-  rename(src, dst) {
-    const srcPath = path.join(this.i, src);
-    const dstPath = path.join(this.i, dst);
-    fs.renameSync(srcPath, dstPath);
-    return dstPath;
+  replace(post, from, to, content) {
+    // TODO replace post content based on text matching from/to, inclusive (and render)
   }
 
-  remove(f) {
-    const p = path.join(this.i, f);
-    fs.unlinkSync(p);
-  }
-
-  renderMarkdown(markdown) {
-    return marked.parse(markdown);
+  publish(post) {
+    // TODO copy latest render to publications, fire some hook
   }
 }
 
