@@ -1,6 +1,6 @@
 # Ouijaboard 🔮
 
-Ouijaboard is a lightweight, AI-powered blogging engine that transforms Markdown posts into hauntingly beautiful HTML renderings. It is designed to seamlessly integrate with large language models (LLMs) and provide a flexible, directive-based syntax for extending its functionality.
+Ouijaboard is a lightweight blogging engine that transforms Markdown posts into hauntingly beautiful HTML renderings. It is designed to seamlessly integrate with large language models (LLMs) and provide a flexible, directive-based syntax for extending its functionality.
 
 ## Usage 🕸️
 
