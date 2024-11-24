@@ -18,10 +18,20 @@ describe('Ouijaboard', () => {
     stub(fs, 'readFileSync').returns('# Hello, World!');
     stub(fs, 'writeFileSync');
     stub(fs, 'copyFileSync');
+
+    // Stub the necronomicon document()
+    stub(instance.spellbook, 'document').returns('# Necronomicon Commands');
   });
 
   afterEach(() => {
     restore();
+  });
+
+  it('should generate document', () => {
+    const document = instance.document();
+    expect(document).to.include('# Blog post syntax');
+    expect(document).to.include('# Necronomicon Commands');
+    expect(instance.spellbook.document).to.have.been.called;
   });
 
   it('should list posts', () => {
@@ -58,7 +68,6 @@ describe('Ouijaboard', () => {
 </html>
 `
     )).true;
-    
   });
 
   it('should replace post content', () => {
