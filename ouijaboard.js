@@ -69,9 +69,16 @@ class Ouijaboard {
   }
 
   replace(post, from, to, content) {
-    const currentContent = this.read(post);
-    const newContent = currentContent.replace(new RegExp(from, 'g'), to, content);
-    return this.write(post, newContent);
+    const current = this.read(post);
+    const start = current.indexOf(from);
+    const end = current.slice(start + from.length).indexOf(to);
+    const count = end + from.length + to.length;
+    const replaced = [
+      current.slice(0, start),
+      content,
+      current.slice(start + count)
+    ].join('');
+    return this.write(post, replaced);
   }
 
   publish(post) {
