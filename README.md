@@ -7,9 +7,9 @@ Ouijaboard is a lightweight blogging engine that transforms Markdown posts into 
 To use Ouijaboard, create a new instance and interact with the available methods:
 
 ```javascript
-import Ouijaboard from 'ouijaboard';
+import ouijaboard from 'ouijaboard';
 
-const blog = new Ouijaboard();
+const blog = ouijaboard();
 
 // List all draft posts
 const posts = blog.list();
@@ -50,4 +50,4 @@ Ouijaboard can be further customized by providing options when creating a new in
 
 ## Contributing 🦄
 
-Contributions to Ouijaboard are welcome! If you have discovered new commands or have suggestions for improvements, please feel free to submit a pull request to the project's [GitHub repository](https://github.com/phantomaton/ouijaboard).
+Contributions to Ouijaboard are welcome! If you have discovered new commands or have suggestions for improvements, please feel free to submit a pull request to the project's [GitHub repository](https://github.com/phantomaton-ai/ouijaboard).
