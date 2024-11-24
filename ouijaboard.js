@@ -46,7 +46,7 @@ class Ouijaboard {
       'Blog posts are written in Markdown, with support for custom directives.',
       '',
       shifted
-    ].join('\n')
+    ].join('\n');
   }
 
   list() {

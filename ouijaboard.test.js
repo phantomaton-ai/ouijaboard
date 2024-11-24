@@ -18,9 +18,6 @@ describe('Ouijaboard', () => {
     stub(fs, 'readFileSync').returns('# Hello, World!');
     stub(fs, 'writeFileSync');
     stub(fs, 'copyFileSync');
-
-    // Stub the necronomicon document()
-    stub(instance.spellbook, 'document').returns('# Necronomicon Commands');
   });
 
   afterEach(() => {
@@ -28,10 +25,10 @@ describe('Ouijaboard', () => {
   });
 
   it('should generate document', () => {
-    const document = instance.document();
-    expect(document).to.include('# Blog post syntax');
-    expect(document).to.include('# Necronomicon Commands');
-    expect(instance.spellbook.document).to.have.been.called;
+    const documentation = instance.document();
+    expect(documentation).to.include('# Blog post syntax');
+    expect(documentation).to.include('## Directive syntax');
+    expect(documentation).to.include('## Available commands');
   });
 
   it('should list posts', () => {
